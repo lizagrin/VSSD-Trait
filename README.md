@@ -132,5 +132,7 @@ Shi Y., Li M., Dong M., Xu C. *VSSD: Vision Mamba with Non-Causal State Space Du
 ## Автор
 
 Гранкина Елизавета Григорьевна
+
 НИУ ВШЭ, Санкт-Петербург
+
 2026
