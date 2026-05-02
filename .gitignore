@@ -141,6 +141,7 @@ celerybeat.pid
 env/
 venv/
 ENV/
+/.claude/
 env.bak/
 venv.bak/
 
@@ -207,4 +208,4 @@ marimo/_lsp/
 __marimo__/
 /DATA/
 /VSSD/
-/VSSD/
+/notebooks/FIv2_VSSD_journal_upgrade_localcache.ipynb

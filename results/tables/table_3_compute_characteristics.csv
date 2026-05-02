@@ -1,0 +1,7 @@
+Метод,Параметры (M),FLOPs (G/клип),GPU latency (мс),CPU latency (мс),Peak mem (МБ)
+EmoFormer (V),78,380,89,1180,1850
+GSFN (V+A+T),134,540,142,2310,2640
+CAT-BE (multi),156,720,168,2680,3120
+VSSD-Trait V (ours),40,504,108,1960,1680
+VSSD-Trait V+A (ours),60,540,148,2680,2310
+"VSSD-Trait V+A+T (full, ours)",63,545,155,2760,2440

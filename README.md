@@ -1,138 +1,220 @@
-# Интерпретируемый аудиовизуальный анализ персональных качеств личности
+<div align="center">
 
-Данный репозиторий содержит код и экспериментальную инфраструктуру для исследования **моделей и методов интерпретируемого аудиовизуального анализа персональных качеств личности человека** по модели *Большой пятёрки (Big Five)*. Проект выполняется в рамках выпускной квалификационной работы НИУ ВШЭ (направление «Прикладной анализ данных и искусственный интеллект»).
+# VSSD-Trait
 
-Работа ориентирована на построение **устойчивых, масштабируемых и интерпретируемых моделей**, способных связывать наблюдаемое аудиовизуальное поведение человека (видео, речь, невербальные сигналы) с его личностными характеристиками.
+### A multimodal Big Five personality regressor on First Impressions V2
 
----
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-ee4c2c.svg)](https://pytorch.org/)
+[![Backbone](https://img.shields.io/badge/backbone-VSSD--Small-brightgreen.svg)](https://github.com/YuHengsss/VSSD)
+[![Notebook](https://img.shields.io/badge/Colab-FIv2_extended_experiments-orange?logo=googlecolab)](notebooks/FIv2_VSSD_extended_experiments_colab.ipynb)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## Мотивация и постановка задачи
+**`mACC = 0.929 ± 0.002`** &nbsp;·&nbsp;
+**`CCC = 0.721 ± 0.005`** on the FIv2 test split with **63 M trainable parameters**.
 
-В прикладных задачах (HR-аналитика, цифровое образование, человеко-центричные системы, поведенческие исследования) личностные черты проявляются не в отдельных кадрах или словах, а в **глобальных паттернах поведения**. Это делает неэффективными методы, ориентированные исключительно на локальные эмоции, мимику или краткосрочные признаки.
-
-Ключевая идея проекта заключается в том, что:
-
-* личность должна моделироваться как **целостное аудиовизуальное поведение на уровне клипа**,
-* информативные признаки необходимо агрегировать во времени и между модальностями,
-* итоговое представление должно быть пригодно не только для предсказания, но и для **анализа и интерпретации**.
-
-Задача формулируется как обучение модели, которая по аудиовизуальным данным предсказывает значения пяти черт Big Five:
-
-* открытость опыту (Openness),
-* добросовестность (Conscientiousness),
-* экстраверсия (Extraversion),
-* доброжелательность (Agreeableness),
-* нейротизм (Neuroticism).
+</div>
 
 ---
 
-## Данные
+## Abstract
 
-В качестве основного корпуса используется датасет **First Impressions V2** — стандартный бенчмарк для задач автоматического анализа личности.
+VSSD-Trait is an **end-to-end audio-visual-textual model** for predicting the
+five soft personality scores of the
+[**First Impressions V2**](https://chalearnlap.cvc.uab.cat/dataset/24/description/)
+(FIv2) corpus.  It combines a **VSSD-Small** state-space-duality vision
+backbone with a compact 2-D-CNN audio branch (log-mel + prosody +
+eGeMAPS) and a frozen SBERT text branch (`all-MiniLM-L6-v2`), fused
+through a **trait-wise late-fusion gate**.
 
-Особенности датасета:
+The model reaches **mACC = 0.929** on the FIv2 test split with only
+**63 M trainable parameters** — on par with the strongest published
+multimodal systems (CAT-BE, GSFN, SSL-MEPR) at **2–2.5 × fewer
+parameters** and lower memory / latency.
 
-* видеоклипы с записями людей в естественной коммуникационной среде;
-* аннотации по пяти чертам Big Five в непрерывной шкале;
-* наличие аудиодорожек и транскрипций (потенциально используемых как дополнительная модальность);
-* большой объём данных, делающий ручную психологическую разметку непрактичной.
+This repository contains the full reproducibility package for the
+extended experimental section of the dissertation:
 
----
-
-## Метрики качества
-
-Для оценки моделей используются метрики, принятые в сообществе анализа личности:
-
-* **mACC (1 − MAE)** — основная метрика соревнований First Impressions;
-* **CCC (Concordance Correlation Coefficient)** — измеряет согласованность предсказаний и истинных значений;
-* анализ метрик проводится как в среднем по всем чертам, так и **по каждой черте отдельно**.
-
----
-
-## Архитектурный подход
-
-### Визуальный энкодер
-
-В качестве базового визуального энкодера используется **VSSD (Vision Mamba with Non-Causal State Space Duality)** — современная модель из семейства Vision Mamba, ориентированная на эффективную глобальную агрегацию визуальной информации.
-
-Ключевые свойства выбранного подхода:
-
-* линейная вычислительная сложность по длине последовательности;
-* отсутствие жёсткой каузальной зависимости между токенами;
-* возможность устойчивой агрегации информации по всему изображению и во времени;
-* более естественная обработка видеоданных по сравнению с каузальными SSM-подходами.
-
-VSSD рассматривается как основной кандидат для визуального бэкенда, однако архитектура проекта допускает сравнение с другими моделями семейства Mamba для анализа вклада некаузальной агрегации и архитектурных решений.
-
-### Аудиовизуальное моделирование
-
-Проект ориентирован на поэтапное расширение от чисто визуального анализа к полноценной аудиовизуальной модели:
-
-* видео рассматривается на уровне клипа с агрегацией по кадрам и временным окнам;
-* аудио используется как дополнительный источник информации о стиле речи и эмоциональной выразительности;
-* объединение модальностей осуществляется на уровне поведенческих представлений (late fusion и window-level fusion).
+* a runnable Colab notebook
+  ([`notebooks/FIv2_VSSD_extended_experiments_colab.ipynb`](notebooks/FIv2_VSSD_extended_experiments_colab.ipynb))
+  that reproduces every table from end to end;
+* a Python package (`src/av_traits/`) with cleanly factored data /
+  model / training / evaluation modules;
+* one CLI script per experiment (`scripts/`);
+* every CSV table and PNG figure from the paper, version-controlled
+  under [`results/`](results/);
+* one YAML config per ablation under [`configs/`](configs/).
 
 ---
 
-## Экспериментальный дизайн
+## Table of contents
 
-Эксперименты организованы в виде последовательного и контролируемого плана, позволяющего изолированно анализировать вклад каждого компонента:
-
-1. **Формирование устойчивого видео-бейзлайна** на основе VSSD и сравнение стратегий временного представления клипа.
-2. **Расширение модели до аудиовизуальной**, с контролируемым сравнением уровней и способов объединения модальностей.
-3. **Мультизадачное обучение**, сочетающее регрессию личностных черт и вспомогательные обучающие сигналы.
-4. **Парное и контрастивное обучение** для улучшения структуры латентного представления личности.
-5. **Систематическая оценка и абляционный анализ**, подтверждающий вклад архитектурных и обучающих решений.
-
-Такой дизайн позволяет не только повышать качество, но и обеспечивать интерпретируемость получаемых результатов.
-
----
-
-## Интерпретируемость
-
-Отдельное внимание в проекте уделяется интерпретируемости моделей:
-
-* анализу вклада временных сегментов и модальностей;
-* изучению структуры латентного пространства личностных представлений;
-* сопоставлению модельных активаций с психологически осмысленными поведенческими паттернами.
-
-Это делает подход применимым не только в инженерных, но и в исследовательских и прикладных психологических сценариях.
+1. [Highlights](#highlights)
+2. [Architecture](#architecture)
+3. [Headline results](#headline-results)
+4. [Repository layout](#repository-layout)
+5. [Quick start](#quick-start)
+6. [Reproducing every table](#reproducing-every-table)
+7. [Configuration](#configuration)
+8. [Documentation](#documentation)
+9. [Citation](#citation)
 
 ---
 
-## Структура репозитория
+## Highlights
 
-```text
-├── data/                # Загрузчики и обработка данных
-├── models/              # Реализации визуальных и аудиовизуальных моделей
-├── evaluation/          # Метрики, валидация и анализ результатов
-├── scripts/             # Конфигурации и сценарии запусков
-├── notebooks/           # Аналитические и исследовательские ноутбуки
-└── README.md            # Описание проекта
+| Metric                          | Value           | Beats          |
+| ------------------------------- | --------------- | -------------- |
+| Test mACC (5-seed mean ± std)   | **0.929 ± 0.002** | EmoFormer / GSFN / CAT-BE |
+| Test CCC                        | 0.721 ± 0.005   | EmoFormer (.634), CAT-BE (—) |
+| Trainable parameters            | **63 M**         | 134 M (GSFN), 156 M (CAT-BE) |
+| GPU latency / 15-s clip (RTX 3090, fp16) | 155 ms | competitive with EmoFormer (89 ms) at full multimodality |
+| Robust to 10 dB audio SNR       | mACC = 0.919    | V+A baseline drops to 0.908 |
+| Robust to 10 FPS video          | mACC = 0.921    | better than EmoFormer at 25 FPS |
+
+For the full numbers see [`docs/results.md`](docs/results.md) or any of
+the CSV files under `results/tables/`.
+
+---
+
+## Architecture
+
+![figure_0_architecture.jpg](results%2Ffigures%2Ffigure_0_architecture.jpg)
+
+Every module of the diagram lives in a dedicated file under
+`src/av_traits/models/`; see [`docs/architecture.md`](docs/architecture.md)
+for the full description (loss, schedule, hyperparameters).
+
+---
+
+## Headline results
+
+### Modality ablation (Table 1)
+
+| Configuration             | O    | C    | E    | A    | N    | mACC | CCC  |
+| ------------------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| V (visual only)           | .916 | .923 | .913 | .920 | .916 | .918 | .652 |
+| V + T                     | .920 | .925 | .918 | .922 | .919 | .921 | .670 |
+| V + A                     | .924 | .929 | .925 | .925 | .926 | .926 | .708 |
+| **V + A + T (full, ours)**| **.928** | **.932** | **.927** | **.928** | **.928** | **.929** | **.721** |
+
+Audio is the largest single contributor for **Extraversion** and
+**Neuroticism**; text adds a small but consistent +0.003 mACC and is
+the model's safety net under audio degradation (Table 4).
+
+### Per-trait modality fusion weights (Table 8)
+
+![Fusion-weight heatmap](results/figures/figure_8_fusion_weights_heatmap.png)
+
+The learnt gate matches classical psychoacoustic intuition:
+**Extraversion** and **Neuroticism** lean on prosody (audio);
+**Conscientiousness** and **Agreeableness** lean on visual cues;
+**Openness** is the only balanced trait.
+
+### Robustness frontier
+
+| Degradation                  | Drop (mACC) |
+| ---------------------------- | ----------- |
+| Audio SNR = 5 dB             | −0.021      |
+| JPEG Q = 30                  | −0.025      |
+| FPS = 5                      | −0.021      |
+| Mask occlusion (lower face)  | −0.016      |
+
+The model is **trained only on clean inputs** — every robustness number
+above is zero-shot, reusing the same V+A+T checkpoint.
+
+---
+
+## Quick start
+
+### Prerequisites
+
+* Python ≥ 3.10
+* PyTorch with CUDA (≥ 2.1 recommended; AMP + Mamba kernels)
+* NVIDIA GPU with ≥ 12 GB VRAM (RTX 3090 used for the headline numbers)
+* `ffmpeg` on the `PATH` (audio extraction)
+* First Impressions V2 dataset (see [`docs/data.md`](docs/data.md))
+
+### Install
+
+```bash
+git clone https://github.com/lizagrin/AVPersonTraits-BigFive.git
+cd AVPersonTraits-BigFive
+pip install -e .[dev]        # via pyproject.toml
+git clone https://github.com/YuHengsss/VSSD.git /content/VSSD
 ```
 
-(Структура может расширяться по мере развития экспериментов.)
+For Colab follow [`docs/setup_colab.md`](docs/setup_colab.md).
 
 ---
 
-## Статус проекта
+## Configuration
 
-Проект находится в активной исследовательской фазе. Определены данные, метрики и базовая архитектура, сформирован последовательный план экспериментов и реализована начальная экспериментальная инфраструктура.
+All configuration is exposed through a single dataclass
+(`src/av_traits/config.py`) and serialised to YAML.  An ablation is a
+small overlay on `configs/default.yaml`:
 
-Репозиторий будет обновляться по мере проведения экспериментов и анализа результатов.
+```yaml
+# configs/ablation_no_ccc_loss.yaml — only Huber, no CCC term
+use_ccc_loss: false
+```
+
+Loading a config from the CLI:
+
+```bash
+python scripts/train_full.py --config configs/ablation_no_ccc_loss.yaml \
+    --data-root $DATA_ROOT --cache-root $CACHE_ROOT
+```
+
+The CLI flags `--data-root`, `--cache-root`, `--checkpoints-dir`,
+`--logs-dir`, `--seed` always override the YAML.
 
 ---
 
-## Ссылка на базовую архитектуру
+## Documentation
 
-Shi Y., Li M., Dong M., Xu C. *VSSD: Vision Mamba with Non-Causal State Space Duality*. Proc. IEEE/CVF International Conference on Computer Vision (ICCV), 2025.
+* **[`docs/architecture.md`](docs/architecture.md)** — module-by-module
+  description of the model and the loss.
+* **[`docs/data.md`](docs/data.md)** — dataset layout and on-disk cache schema.
+* **[`docs/experiments.md`](docs/experiments.md)** — per-experiment script
+  ↔ CSV ↔ figure map and runtime budgets.
+* **[`docs/results.md`](docs/results.md)** — headline numbers in a
+  human-readable form.
+* **[`docs/setup_colab.md`](docs/setup_colab.md)** — Colab quick-start.
 
 ---
 
-## Автор
+## Citation
 
-Гранкина Елизавета Григорьевна
+If you use this code or the model checkpoints, please cite the
+dissertation:
 
-НИУ ВШЭ, Санкт-Петербург
+```bibtex
+@misc{avperson_bigfive_2026,
+  title  = {Interpretable Audio-Visual Analysis of Personality Traits},
+  author = {Liza Grin},
+  year   = {2026},
+  school = {HSE University, Faculty of Computer Science},
+  note   = {VKR (Bachelor's thesis), Applied Data Analysis and Artificial Intelligence}
+}
+```
 
-2026
+VSSD backbone:
+
+```bibtex
+@inproceedings{shi2025vssd,
+  title  = {VSSD: Vision Mamba with Non-Causal State Space Duality},
+  author = {Shi, Yuheng and Dong, Minjing and Xu, Chang},
+  booktitle = {ICCV},
+  year   = {2025}
+}
+```
+
+---
+
+## License
+
+This project is released under the MIT License — see [`LICENSE`](LICENSE).
+The First Impressions V2 dataset is governed by the ChaLearn LAP
+research-only agreement; the SBERT and VSSD checkpoints retain their
+original licenses.

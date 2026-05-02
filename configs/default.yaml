@@ -1,0 +1,91 @@
+# Default configuration — full VSSD-Trait V+A+T model.
+# Mirrors the dataclass in src/av_traits/config.py.
+
+# paths
+project_root:        /content/fiv2_vssd_project
+dataset_source:      local
+local_dataset_root:  /content/drive/MyDrive/FIv2_persistent_cache/DATA
+cache_root:          /content/fiv2_cache_local
+checkpoints_dir:     /content/fiv2_checkpoints
+logs_dir:            /content/fiv2_logs
+vssd_repo_dir:       /content/VSSD
+
+# data
+train_windows:           8
+eval_windows:            14
+train_frames_per_window: 4
+eval_frames_per_window:  8
+local_window_span_sec:   2.0
+face_size:               224
+sample_rate:             16000
+
+# audio
+n_mels:        128
+n_fft:         1024
+hop_length:    320
+win_length:    1024
+use_ege_maps:  true
+
+# text
+sbert_model: sentence-transformers/all-MiniLM-L6-v2
+text_dim:    384
+
+# model
+trait_names:
+  - openness
+  - conscientiousness
+  - extraversion
+  - agreeableness
+  - neuroticism
+num_traits: 5
+num_bins:   3
+
+vssd_variant:    small
+vssd_ckpt_repo:  YuhengSSS/VSSD_ICCV_weights
+vssd_small_ckpt: vssd_small_mesa.pth
+vssd_tiny_ckpt:  vssd_tiny_mesa.pth
+
+hidden_dim:        512
+audio_deep_dim:    256
+audio_hc_dim:      128
+dropout:           0.15
+modality_dropout_p: 0.10
+
+# experiment switches
+active_modalities: [V, A, T]
+backbone_kind:     vssd        # vssd | resnet50 | vit_b16
+pooling_mode:      attention   # attention | mean
+fusion_mode:       weighted    # weighted | concat
+use_windowing:     true
+use_aux_heads:     true
+use_ccc_loss:      true
+
+# optimization
+batch_size:       2
+eval_batch_size:  2
+num_workers:      4
+weight_decay:     0.0001
+amp:              true
+grad_accum_steps: 2
+max_grad_norm:    1.0
+
+stage1_epochs: 2
+stage2_epochs: 4
+stage3_epochs: 6
+lr_heads_stage1:    0.0003
+lr_heads_stage2:    0.00015
+lr_heads_stage3:    0.00008
+lr_backbone_stage2: 0.000008
+lr_backbone_stage3: 0.000003
+
+# losses
+lambda_ccc:        0.5
+lambda_bin:        0.2
+lambda_pair:       0.1
+lambda_aux_modal:  0.15
+huber_beta:        0.05
+
+# misc
+seed: 42
+max_train_samples: null
+max_val_samples:   null

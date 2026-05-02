@@ -1,0 +1,29 @@
+{
+  "tables": {
+    "table_1_modality_ablation": "results/tables/table_1_modality_ablation.csv",
+    "table_2_architectural_ablation": "results/tables/table_2_architectural_ablation.csv",
+    "table_3_compute_characteristics": "results/tables/table_3_compute_characteristics.csv",
+    "table_4_audio_noise": "results/tables/table_4_audio_noise.csv",
+    "table_5_jpeg_compression": "results/tables/table_5_jpeg_compression.csv",
+    "table_6_fps_decimation": "results/tables/table_6_fps_decimation.csv",
+    "table_7_face_occlusion": "results/tables/table_7_face_occlusion.csv",
+    "table_8_fusion_weights": "results/tables/table_8_fusion_weights.csv",
+    "table_9_window_attention": "results/tables/table_9_window_attention.csv",
+    "table_10_seed_reproducibility": "results/tables/table_10_seed_reproducibility.csv",
+    "table_11_final_comparison": "results/tables/table_11_final_comparison.csv"
+  },
+  "figures": [
+    "figure_10_seed_reproducibility.png",
+    "figure_11_final_comparison.png",
+    "figure_12_training_curves.png",
+    "figure_1_modality_ablation.png",
+    "figure_2_architectural_ablation.png",
+    "figure_3_efficiency_frontier.png",
+    "figure_4_audio_noise.png",
+    "figure_5_jpeg_compression.png",
+    "figure_6_fps_decimation.png",
+    "figure_7_face_occlusion.png",
+    "figure_8_fusion_weights_heatmap.png",
+    "figure_9_window_attention.png"
+  ]
+}
