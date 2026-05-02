@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+title: "AVPersonTraits-BigFive: VSSD-Trait — Multimodal Big Five Personality Regressor on First Impressions V2"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: "Grin"
+    given-names: "Liza"
+    affiliation: "HSE University, Faculty of Computer Science"
+repository-code: "https://github.com/lizagrin/AVPersonTraits-BigFive"
+license: MIT
+keywords:
+  - personality computing
+  - big five
+  - first impressions v2
+  - vssd
+  - mamba
+  - multimodal
+  - audio-visual
+  - sbert
+preferred-citation:
+  type: thesis
+  title: "Interpretable Audio-Visual Analysis of Personality Traits"
+  authors:
+    - family-names: "Grin"
+      given-names: "Liza"
+  year: 2026
+  thesis-type: "Bachelor's thesis (VKR)"
+  institution:
+    name: "HSE University, Faculty of Computer Science"

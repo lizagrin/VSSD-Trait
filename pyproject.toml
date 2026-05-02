@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "av_traits"
+version = "0.2.0"
+description = "VSSD-Trait — multimodal Big Five personality regressor on First Impressions V2"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Liza Grin" },
+]
+keywords = [
+    "personality computing",
+    "big five",
+    "first impressions v2",
+    "vssd",
+    "mamba",
+    "multimodal",
+    "audio-visual",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "PyYAML>=6.0",
+    "matplotlib>=3.7",
+    "tqdm>=4.65",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/lizagrin/AVPersonTraits-BigFive"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["av_traits*"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "W"]
+ignore = ["E501"]
