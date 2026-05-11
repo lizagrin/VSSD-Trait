@@ -192,19 +192,14 @@ or `cfg.use_ccc_loss = False`.
 
 Optimization is by **AdamW** with learning rate `1·10⁻⁴` for the
 randomly-initialised modules and `1·10⁻⁵` for fine-tuning VSSD; the
-text encoder is **frozen**. Training follows a 3-stage staged-unfreezing
-curriculum:
+text encoder is **frozen**. AMP enabled; gradient accumulation = 2;
+max-norm clipping at 1.0. A full training run takes ~18 h on a single
+NVIDIA RTX 3090 (24 GB).
 
-| Stage | Epochs | Backbone   | LR (heads) | LR (backbone) |
-| ----- | ------ | ---------- | ---------- | ------------- |
-| 1     | 2      | frozen     | 3 × 10⁻⁴  | 0             |
-| 2     | 4      | last stage | 1.5 × 10⁻⁴| 8 × 10⁻⁶     |
-| 3     | 6      | all        | 8 × 10⁻⁵  | 3 × 10⁻⁶     |
-
-Linear warmup (8 % of steps) → half-cosine decay; AMP enabled; gradient
-accumulation = 2; max-norm clipping at 1.0. A full training run takes
-~18 h on a single NVIDIA RTX 3090 (24 GB). The corresponding curves
-of mACC and CCC across the three stages are shown below.
+**Learning-rate schedule.** A two-phase rule: linear warmup raises
+the LR from zero to its target value over the first few epochs to
+keep the early steps stable, then cosine annealing smoothly decays
+it towards zero for fine convergence near the loss minimum.
 
 **Early stopping.** After every epoch the summary validation mACC is
 evaluated and the best-so-far checkpoint kept; training halts once
@@ -212,8 +207,11 @@ the metric fails to improve by more than a negligible threshold for a
 fixed observation window and the parameters are restored from that
 checkpoint. The window is sized to exceed the characteristic noise
 amplitude on the stabilization plateau, so the criterion is
-reproducible without committing to a fixed epoch budget. 
+reproducible without committing to a fixed epoch budget. Empirically
+the rule fires at epoch 28 (mACC = 0.929); see
+[training stop control](results.md#training-stop-control) for the
+full 42-epoch trajectory.
 
 <p align="center">
-  <img src="../results/figures/figure_12_training_curves.png" alt="Training curves" width="640">
+  <img src="../results/figures/figure_12_training_curves.png" alt="Training curves" width="780">
 </p>
