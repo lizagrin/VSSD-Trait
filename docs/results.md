@@ -4,7 +4,7 @@
 > measurement, no further tuning). `mACC = 1 − mean MAE` over the five
 > Big Five traits; `CCC` = mean concordance correlation coefficient.
 
-## Table 1 — Modality ablation
+## Modality ablation
 
 | Configuration             | O    | C    | E    | A    | N    | mACC | CCC  |
 | ------------------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
@@ -22,7 +22,7 @@ and **Neuroticism** (+0.010); text adds a smaller but consistent
 +0.003 mACC and becomes the model's safety net under audio degradation
 (Table 4).
 
-## Table 2 — Architectural ablation
+## Architectural ablation
 
 | Configuration                                | mACC  | CCC   | ΔmACC  |
 | -------------------------------------------- | ----- | ----- | ------ |
@@ -45,7 +45,7 @@ duality is the most load-bearing design choice. Dropping the windowed
 representation costs another 0.006 mACC, confirming the value of local
 mimic / prosody synchronisation enabled by level-1 fusion.
 
-## Table 3 — Computational characteristics
+## Computational characteristics
 
 | Method                          | Params (M) | FLOPs (G/clip) | GPU lat. (ms) | CPU lat. (ms) | Peak mem (MB) |
 | ------------------------------- | ---------- | -------------- | ------------- | ------------- | ------------- |
@@ -64,12 +64,12 @@ VSSD-Trait sits on the upper-left of the parameters / quality frontier
 — same or better mACC than competing multimodal methods at **2–2.5×
 fewer trainable parameters**.
 
-## Tables 4–7 — Robustness to input degradations
+## Robustness to input degradations
 
 All four experiments reuse the **clean-trained** V+A+T checkpoint;
 nothing is fine-tuned for the corrupted inputs.
 
-### Table 4 — Audio noise (additive Gaussian)
+### Audio noise (additive Gaussian)
 
 | SNR        | V+A+T mACC | ΔmACC  | V+A mACC | Δ vs clean V+A |
 | ---------- | ---------- | ------ | -------- | -------------- |
@@ -85,7 +85,7 @@ specifically as a noise safety net.
   <img src="../results/figures/figure_4_audio_noise.png" alt="Audio noise robustness" width="480">
 </p>
 
-### Table 5 — JPEG compression
+### JPEG compression
 
 | Quality  | mACC  | ΔmACC  |
 | -------- | ----- | ------ |
@@ -98,7 +98,7 @@ specifically as a noise safety net.
   <img src="../results/figures/figure_5_jpeg_compression.png" alt="JPEG compression robustness" width="480">
 </p>
 
-### Table 6 — FPS decimation
+### FPS decimation
 
 | FPS        | mACC  | ΔmACC  | Frames / clip |
 | ---------- | ----- | ------ | ------------- |
@@ -111,7 +111,7 @@ specifically as a noise safety net.
   <img src="../results/figures/figure_6_fps_decimation.png" alt="FPS decimation" width="480">
 </p>
 
-### Table 7 — Face occlusions
+### Face occlusions
 
 | Occlusion type             | mACC  | ΔmACC  | Most affected trait     |
 | -------------------------- | ----- | ------ | ----------------------- |
@@ -130,7 +130,7 @@ occlusion harming Agreeableness (gaze direction, peri-orbital region)
 — both consistent with psychophysiological literature on personality
 perception.
 
-## Table 8 — Per-trait fusion weights
+## Per-trait fusion weights
 
 | Trait                       | w_V (video) | w_A (audio) | w_T (text) | Dominant modality |
 | --------------------------- | ----------- | ----------- | ---------- | ----------------- |
@@ -149,7 +149,7 @@ The learnt gate matches classical psychoacoustic intuition:
 **Conscientiousness** and **Agreeableness** lean on visual cues;
 **Openness** is the only balanced trait.
 
-## Table 9 — Temporal attention
+## Temporal attention
 
 The window-attention profile, averaged over 2 000 test clips and 5
 seeds, is a smooth bell with a maximum on windows 7–8 (≈ 6–9 s into
@@ -171,7 +171,7 @@ around the mouth.
   <img src="../results/figures/figure_gradcam_neuroticism.jpg" alt="Grad-CAM — Neuroticism" width="280">
 </p>
 
-## Table 10 — 5-seed reproducibility
+## 5-seed reproducibility
 
 | Metric                | Mean  | Std   | 95 % CI            |
 | --------------------- | ----- | ----- | ------------------ |
@@ -192,7 +192,32 @@ CAT-BE, i.e. the improvement over those baselines is statistically
 significant. Seeds `{42, 123, 456, 789, 2024}`, t-distribution with
 df = 4.
 
-## Table 11 — Final comparison
+## Training stop control
+
+To verify that the early-stopping rule (see
+[`docs/architecture.md`](architecture.md#training-schedule)) fires at
+the right epoch, one run was extended past the trigger with the rule
+disabled. The trajectory decomposes into four stages:
+
+| Stage         | Epochs | Train loss   | Val mACC          |
+| ------------- | ------ | ------------ | ----------------- |
+| Warmup        | 1–3    | 1.85 → 1.26  | 0.870 → 0.905     |
+| Fast learning | 4–15   | 1.26 → 0.38  | 0.905 → 0.926     |
+| Stabilization | 16–28  | 0.38 → 0.29  | 0.926 → **0.929** |
+| Plateau       | 29–42  | 0.29 → 0.25  | 0.929 → 0.928     |
+
+<p align="center">
+  <img src="../results/figures/figure_12_training_curves.png" alt="Training curves with early stopping disabled" width="780">
+</p>
+
+The best checkpoint lands at epoch 28 — exactly where the rule would
+fire. Past that point the training loss keeps falling (0.29 → 0.25)
+while validation mACC oscillates within 0.001 and ends below the peak:
+the canonical signature of overfitting. Extending training therefore
+yields no generalization gain, confirming the chosen stopping
+criterion.
+
+## Final comparison
 
 | Method                | Mod.            | mACC          | CCC          |
 | --------------------- | --------------- | ------------- | ------------ |

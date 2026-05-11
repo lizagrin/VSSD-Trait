@@ -206,6 +206,14 @@ accumulation = 2; max-norm clipping at 1.0. A full training run takes
 ~18 h on a single NVIDIA RTX 3090 (24 GB). The corresponding curves
 of mACC and CCC across the three stages are shown below.
 
+**Early stopping.** After every epoch the summary validation mACC is
+evaluated and the best-so-far checkpoint kept; training halts once
+the metric fails to improve by more than a negligible threshold for a
+fixed observation window and the parameters are restored from that
+checkpoint. The window is sized to exceed the characteristic noise
+amplitude on the stabilization plateau, so the criterion is
+reproducible without committing to a fixed epoch budget. 
+
 <p align="center">
   <img src="../results/figures/figure_12_training_curves.png" alt="Training curves" width="640">
 </p>
