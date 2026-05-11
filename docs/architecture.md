@@ -20,7 +20,11 @@ and a trait-wise gated combination on top of which the interpretability
 module operates.
 
 <p align="center">
-  <img src="../results/figures/figure_method_overview_part1.jpg" alt="Functional scheme" width="1200">
+  <img src="../results/figures/figure_method_overview_part1.jpg" alt="Functional scheme — part 1" width="720">
+</p>
+
+<p align="center">
+  <img src="../results/figures/figure_method_overview_part2.jpg" alt="Functional scheme — part 2" width="720">
 </p>
 
 A condensed end-to-end view of the same pipeline:
