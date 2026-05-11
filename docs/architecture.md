@@ -20,19 +20,19 @@ and a trait-wise gated combination on top of which the interpretability
 module operates.
 
 <p align="center">
-  <img src="../results/figures/figure_method_overview_part1.jpg" alt="Functional scheme" width="720">
+  <img src="../results/figures/figure_method_overview_part1.jpg" alt="Functional scheme" width="1200">
 </p>
 
 A condensed end-to-end view of the same pipeline:
 
 <p align="center">
-  <img src="../results/figures/figure_0_architecture.jpg" alt="End-to-end architecture" width="780">
+  <img src="../results/figures/figure_0_architecture.jpg" alt="End-to-end architecture" width="1200">
 </p>
 
 ## Visual branch (`src/av_traits/models/visual.py`)
 
 <p align="center">
-  <img src="../results/figures/figure_visual_branch.jpg" alt="Visual branch" width="720">
+  <img src="../results/figures/figure_visual_branch.jpg" alt="Visual branch" width="900">
 </p>
 
 * **Windowing** — a 15 s clip at 25 FPS is split into **14 overlapping
@@ -41,7 +41,7 @@ A condensed end-to-end view of the same pipeline:
   of elementary mimic events.
 
 <p align="center">
-  <img src="../results/figures/figure_window_partition.jpg" alt="Clip-to-window decomposition" width="720">
+  <img src="../results/figures/figure_window_partition.jpg" alt="Clip-to-window decomposition" width="800">
 </p>
 
 * **Face localization** — **RetinaFace** crops each sampled frame with
@@ -67,7 +67,7 @@ A condensed end-to-end view of the same pipeline:
 ## Audio branch (`src/av_traits/models/audio.py`)
 
 <p align="center">
-  <img src="../results/figures/figure_audio_branch.jpg" alt="Acoustic branch" width="720">
+  <img src="../results/figures/figure_audio_branch.jpg" alt="Acoustic branch" width="900">
 </p>
 
 The speech signal is converted to mono 16 kHz, amplitude-normalised
@@ -183,7 +183,7 @@ or `cfg.use_ccc_loss = False`.
 ## Training schedule
 
 <p align="center">
-  <img src="../results/figures/figure_training_scheme.jpg" alt="Training scheme" width="780">
+  <img src="../results/figures/figure_training_scheme.jpg" alt="Training scheme" width="1000">
 </p>
 
 Optimization is by **AdamW** with learning rate `1·10⁻⁴` for the

@@ -88,7 +88,7 @@ fusion module that produces a five-trait prediction along with the
 attention / gate weights that power the interpretability module.
 
 <p align="center">
-  <img src="results/figures/figure_method_overview_part1.jpg" alt="Method overview" width="780">
+  <img src="results/figures/figure_method_overview_part1.jpg" alt="Method overview" width="1200">
 </p>
 
 Every module of the diagram lives in a dedicated file under

@@ -77,7 +77,7 @@ shared across modalities so that level-1 fusion (window-level AV
 concat) is locally synchronised — see [`architecture.md`](architecture.md#two-level-late-fusion-srcav_traitsmodelsfusionpy).
 
 <p align="center">
-  <img src="../results/figures/figure_window_partition.jpg" alt="Clip-to-window decomposition" width="720">
+  <img src="../results/figures/figure_window_partition.jpg" alt="Clip-to-window decomposition" width="800">
 </p>
 
 Inside each visual window, **K = 8** frames are uniformly sampled and
